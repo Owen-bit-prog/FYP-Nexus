@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYP Nexus — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/auth-mobile-fixes.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="grid-overlay"></div>
+</div>
+<div class="auth-wrap">
+  <!-- Left Panel -->
+  <div class="panel-left">
+    <a class="brand" href="index.html" aria-label="Go to FYP Nexus home">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="12" height="12" rx="3" fill="white"/>
+          <rect x="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect y="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect x="16" y="16" width="12" height="12" rx="3" fill="white" opacity=".3"/>
+        </svg>
+      </div>
+      <span class="brand-name">FYP <strong>Nexus</strong></span>
+    </a>
+
+    <div class="hero-text">
+      <h1>Where great<br><em>projects begin</em></h1>
+      <p>The complete collaboration platform for final year students and their supervisors. Track progress, share files, and connect — all in one place.</p>
+    </div>
+
+    
+<div class="feature-grid">
+
+  <div class="feat-card">
+    <div class="feat-icon blue"><i class="fas fa-chart-line"></i></div>
+    <h3>Progress Tracking</h3>
+    <p>Progress tracking and real-time status</p>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-icon green"><i class="fas fa-folder"></i></div>
+    <h3>Document Submission</h3>
+    <p>Upload chapters and get structured feedback</p>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-icon purple"><i class="fas fa-comments"></i></div>
+    <h3>Direct Messaging</h3>
+    <p>Real-time chat and video meetings</p>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-icon orange"><i class="fas fa-calendar-alt"></i></div>
+    <h3>Meeting Scheduler</h3>
+    <p>Book and join sessions from one place</p>
+  </div>
+
+</div>
+
+
+
+
+    <div class="panel-quote">
+      "A complete platform connecting students and supervisors for seamless project tracking, document management, and real-time collaboration."
+
+    </div>
+  </div>
+
+  <!-- Right Panel — Auth Form -->
+  <div class="panel-right">
+    <div class="auth-card">
+
+      <!-- LOGIN -->
+      <div id="form-login" class="auth-form active">
+        <form onsubmit="event.preventDefault(); doLogin();" novalidate>
+          <div class="form-head">
+            <h2>Welcome back</h2>
+            <p>Sign in to your FYP Nexus account</p>
+          </div>
+          <div class="field-group">
+            <label for="l-email">Email address</label>
+            <input type="email" id="l-email" placeholder="you@university.edu" autocomplete="email" required>
+          </div>
+          <div class="field-group">
+            <label for="l-pass">Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" required>
+              <button class="pass-toggle" type="button" onclick="togglePass('l-pass')" aria-label="Show or hide password">👁</button>
+            </div>
+          </div>
+          <div class="form-extras">
+            <label class="remember-label">
+              <input type="checkbox" id="l-remember">
+              <span>Remember me</span>
+            </label>
+          </div>
+          <button class="btn-submit" type="submit">
+            <span>Sign In</span>
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <div class="auth-error" id="login-error" aria-live="polite"></div>
+          <a href="index.html" class="home-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

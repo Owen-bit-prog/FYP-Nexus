@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYP Nexus — Supervisor Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/supervisor.css">
+<link rel="stylesheet" href="css/dashboard-mobile-fixes.css">
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect width="12" height="12" rx="3" fill="white"/>
+          <rect x="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect y="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect x="16" y="16" width="12" height="12" rx="3" fill="white" opacity=".3"/>
+        </svg>
+      </div>
+      <span class="brand-title">FYP <span>Nexus</span></span>
+    </div>
+
+    <div class="role-badge-wrap">
+      <span class="role-badge-supervisor"><i class="fas fa-chalkboard-teacher"></i> Supervisor</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <a class="nav-item active" data-page="overview" onclick="navigate('overview')">
+        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>Overview
+      </a>
+      <a class="nav-item" data-page="groups" onclick="navigate('groups')">
+        <span class="nav-icon"><i class="fas fa-layer-group"></i></span>My Groups
+        <span class="nav-badge teal" id="badge-groups" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="students" onclick="navigate('students')">
+        <span class="nav-icon"><i class="fas fa-users"></i></span>My Students
+        <span class="nav-badge teal" id="badge-students" style="display:none">0</span>
+      </a>
+     
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Review</div>
+      <a class="nav-item" data-page="submissions" onclick="navigate('submissions')">
+        <span class="nav-icon"><i class="fas fa-file-arrow-up"></i></span>Submissions
+        <span class="nav-badge warn" id="badge-submissions" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="feedback" onclick="navigate('feedback')">
+        <span class="nav-icon"><i class="fas fa-comment-dots"></i></span>Feedback Given
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Connect</div>
+      <a class="nav-item" data-page="messages" onclick="navigate('messages')">
+        <span class="nav-icon"><i class="fas fa-message"></i></span>Messages
+        <span class="nav-badge" id="badge-messages" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="meetings" onclick="navigate('meetings')">
+        <span class="nav-icon"><i class="fas fa-video"></i></span>Meetings
+        <span class="nav-badge teal" id="badge-meetings" style="display:none">0</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Account</div>
+      <a class="nav-item" data-page="profile" onclick="navigate('profile')">
+        <span class="nav-icon"><i class="fas fa-user-circle"></i></span>Profile
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ TOPBAR ════════════════════════════════════════ -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="page-breadcrumb">
+        <span>FYP Nexus</span>
+        <i class="fas fa-chevron-right" style="font-size:9px;opacity:.4;"></i>
+        <span class="cur" id="breadcrumb-label">Overview</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle theme">
+        <i id="theme-icon" class="fas fa-moon"></i>
+      </button>
+      <div style="position:relative;">
+        <button class="topbar-btn" id="notif-btn" onclick="toggleNotif()">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notif-count" style="display:none">0</span>
+        </button>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-hdr">
+            <span style="font-weight:700;font-size:14px;">Notifications</span>
+            <button onclick="markAllRead()" style="background:none;border:none;color:var(--amber);font-size:12px;cursor:pointer;font-weight:700;">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;">No notifications</div>
+          </div>
+        </div>
+      </div>
+      <div class="user-chip" onclick="navigate('profile')">
+        <div class="avatar avatar-teal" id="topbar-avatar">S</div>
+        <div class="user-chip-info">
+          <div class="user-chip-name" id="topbar-name">Supervisor</div>
+          <div class="user-chip-role">Supervisor</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ════ PAGE: OVERVIEW ════ -->
+    <section class="page active" id="page-overview">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2><span id="greeting">Good morning 👋</span></h2>
+          <p id="greeting-sub">Here's your supervision summary at a glance.</p>
+        </div>
+        <div class="flex-row">
+          <button class="btn btn-teal" onclick="navigate('students')">
+            <i class="fas fa-users"></i> My Students
+          </button>
+        </div>
+      </div>
+
+      <!-- Pending action banner -->
+      <div class="alert-banner alert-amber" id="pending-alert" style="display:none;">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+          <strong id="pending-alert-title">Action Required</strong>
+          <span id="pending-alert-body"></span>
+        </div>
+        <button onclick="document.getElementById('pending-alert').style.display='none'" style="background:none;border:none;color:inherit;cursor:pointer;margin-left:auto;"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- KPI stats -->
+      <div class="stats-grid">
+        <div class="stat-card teal">
+          <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+          <div class="stat-label">Assigned Groups</div>
+          <div class="stat-value" id="stat-groups">—</div>
+          <div class="stat-sub" id="stat-groups-sub">active group work</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-label">Students Under Supervision</div>
+          <div class="stat-value" id="stat-group-students">—</div>
+          <div class="stat-sub" id="stat-group-students-sub">across assigned groups</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+          <div class="stat-label">Pending Reviews</div>
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-sub" id="stat-pending-sub">submissions awaiting</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+          <div class="stat-label">Approved Projects</div>
+          <div class="stat-value" id="stat-approved">—</div>
+          <div class="stat-sub" id="stat-approved-sub">ready for final review</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+          <div class="stat-label">Upcoming Meetings</div>
+          <div class="stat-value" id="stat-meetings">—</div>
+          <div class="stat-sub" id="stat-meetings-sub">scheduled this week</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:4px;">
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">My Assigned Groups</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('groups')">Open Groups <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body" id="overview-groups-list">
+            <div class="skeleton" style="height:52px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:52px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:52px;border-radius:8px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Pending Reviews</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('submissions')">View All <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body" id="overview-submissions-list">
+            <div class="skeleton" style="height:52px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:52px;border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">Supervisor Timeline</span>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('groups')">Track Progress <i class="fas fa-arrow-right"></i></button>
+        </div>
+        <div class="card-body" id="overview-timeline-list">
+          <div class="empty-state" style="padding:28px;">
+            <div class="empty-icon"><i class="fas fa-stream"></i></div>
+            <div class="empty-title">No group milestones yet</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: MY GROUPS ════ -->
+    <section class="page" id="page-groups">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>My Groups</h2>
+          <p>View the groups assigned to you by the Admin and follow their project progress.</p>
+        </div>
+        <div class="flex-row-align">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="groups-search" placeholder="Search groups…" oninput="filterGroups(this.value)">
+          </div>
+        </div>
+      </div>
+      <div id="groups-grid" class="groups-grid">
+        <div class="skeleton" style="height:220px;border-radius:14px;"></div>
+        <div class="skeleton" style="height:220px;border-radius:14px;"></div>
+        <div class="skeleton" style="height:220px;border-radius:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: MY STUDENTS ════ -->
+    <section class="page" id="page-students">
+    </section>
+
+    <!-- ════ PAGE: MY STUDENTS ════ -->
+    <section class="page" id="page-students">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>My Students</h2>
+          <p>Manage and monitor all your assigned students</p>
+        </div>
+        <div class="flex-row-align">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="students-search" placeholder="Search students…" oninput="filterStudents(this.value)">
+          </div>
+        </div>
+      </div>
+      <div id="students-grid" class="students-grid">
+        <div class="skeleton" style="height:200px;border-radius:14px;"></div>
+        <div class="skeleton" style="height:200px;border-radius:14px;"></div>
+        <div class="skeleton" style="height:200px;border-radius:14px;"></div>
+      </div>
+    </section>
+
+
+    <!-- ════ PAGE: SUBMISSIONS ════ -->
+    <section class="page" id="page-submissions">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Submissions</h2>
+          <p>Review and grade student file submissions</p>
+        </div>
+        <div class="flex-row-gap-8">
+         
+          <select class="filter-select" id="submission-filter" onchange="filterSubmissions(this.value)">
+            <option value="all">All Status</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="revision">Needs Revision</option>
+          </select>
+        </div>
+      </div>
+      <div id="submissions-table-wrap">
+        <table class="data-table" id="submissions-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Submitted</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--txt3);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: FEEDBACK ════ -->
+    <section class="page" id="page-feedback">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Feedback Given</h2>
+          <p>History of feedback provided to students</p>
+        </div>
+      </div>
+      <div id="feedback-list" class="feedback-list">
+        <div class="skeleton" style="height:100px;border-radius:14px;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:100px;border-radius:14px;margin-bottom:12px;"></div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: MESSAGES ════ -->
+    <section class="page" id="page-messages">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Messages</h2>
+          <p>Direct communication with your students</p>
+        </div>
+      </div>
+      <div class="messages-layout">
+        <div class="msg-sidebar" id="msg-contacts">
+          <div class="msg-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="msg-search-input" placeholder="Search students…" oninput="filterContacts(this.value)">
+          </div>
+          <div id="msg-contact-list">
+            <div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px;">Loading…</div>
+          </div>
+        </div>
+        <div class="msg-main" id="msg-main">
+          <div class="msg-empty-state">
+            <i class="fas fa-comments"></i>
+            <p>Select a student to start messaging</p>
+            <p>Pick a student from the left panel</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: MEETINGS ════ -->
+    <section class="page" id="page-meetings">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Meetings</h2>
+          <p>Schedule and manage student meetings</p>
+        </div>
+        <button class="btn btn-teal" onclick="openModal('modal-schedule-meeting')">
+          <i class="fas fa-calendar-plus"></i> Schedule Meeting
+        </button>
+      </div>
+
+      <div class="meetings-tabs">
+        <button class="mtab active" id="mtab-upcoming" onclick="switchMeetingTab('upcoming')"><i class="fas fa-clock"></i>Upcoming</button>
+        <button class="mtab" id="mtab-past" onclick="switchMeetingTab('past')"><i class="fas fa-history"></i>Past</button>
+      </div>
+
+      <div id="meetings-list-upcoming" class="meetings-grid">
+        <div class="skeleton" style="height:120px;border-radius:14px;"></div>
+        <div class="skeleton" style="height:120px;border-radius:14px;"></div>
+      </div>
+      <div id="meetings-list-past" class="meetings-grid" style="display:none;"></div>
+    </section>
+
+    <!-- ════ PAGE: PROFILE ════ -->
+    <section class="page" id="page-profile">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2><i class="fas fa-user-tie"></i>My Profile</h2>
+          <p>Manage your account information</p>
+        </div>
+      </div>
+      <div class="profile-layout">
+        <div class="card profile-card">
+          <div class="profile-avatar-section">
+            <div class="avatar avatar-teal avatar-xl" id="profile-avatar-display">S</div>
+            <div>
+              <h3 id="profile-name-display">—</h3>
+              <p id="profile-email-display">—</p>
+              <span class="badge badge-teal" style="margin-top:6px;">Supervisor</span>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="pstat"><i class="fas fa-users"></i><span id="ps-students">—</span><small>Students</small></div>
+            <div class="pstat"><i class="fas fa-briefcase"></i><span id="ps-projects">—</span><small>Projects</small></div>
+            <div class="pstat"><i class="fas fa-comments"></i><span id="ps-feedback">—</span><small>Feedback</small></div>
+          </div>
+        </div>
+        <div class="card" style="flex:1;">
+          <div class="card-hdr"><span class="card-title"><i class="fas fa-pen"></i>Edit Profile</span></div>
+          <div class="card-body">
+            <div class="form-group"><label><i class="fas fa-id-card"></i>Full Name</label><input type="text" id="prof-name" placeholder="Your full name"></div>
+            <div class="form-group"><label><i class="fas fa-building"></i>Department</label>
+              <select id="prof-dept">
+                <option value="">Select department</option>
+                <option>Computer Science</option>
+                <option>Engineering</option>
+                <option>Information Technology</option>
+                <option>Data Science</option>
+                <option>Cybersecurity</option>
+                <option>Mathematics</option>
+              </select>
+            </div>
+            <div class="form-group"><label><i class="fas fa-phone"></i>Phone</label><input type="tel" id="prof-phone" placeholder="+233 XX XXX XXXX"></div>
+            <div class="form-group"><label><i class="fas fa-lightbulb"></i>Bio / Research Interests</label><textarea id="prof-bio" rows="3" placeholder="Brief description of your research interests…"></textarea></div>
+            <div class="form-group"><label><i class="fas fa-key"></i>New Password (leave blank to keep current)</label>
+              <div class="pass-wrap"><input type="password" id="prof-pass" placeholder="New password"><button class="pass-toggle" onclick="togglePass('prof-pass')">👁</button></div>
+            </div>
+            <button class="btn btn-teal" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════ -->
+
+<!-- Review Submission Modal -->
+<div class="modal-overlay" id="modal-review">
+  <div class="modal modal-lg">
+    <div class="modal-hdr">
+      <span class="modal-title"><i class="fas fa-pen-to-square"></i>Review Submission</span>
+      <button class="modal-close" onclick="closeModal('modal-review')">✕</button>
+    </div>
+    <div id="review-submission-body"></div>
+    <div style="border-top:1px solid var(--border);padding:16px 20px;">
+      <div class="form-group"><label><i class="fas fa-comment"></i>Your Feedback / Comments *</label>
+        <textarea id="review-feedback" rows="4" placeholder="Provide detailed feedback for the student…"></textarea>
+      </div>
+            <div class="profile-field-row">
+          <div class="profile-field">
+            <label><i class="fas fa-star"></i>Grade / Score (optional)</label>
+            <input type="text" id="review-grade" placeholder="e.g. A, 85%, Pass">
+          </div>
+          <div class="profile-field">
+            <label><i class="fas fa-check-double"></i>Decision *</label>
+          <select id="review-decision">
+            <option value="approved">✅ Approved</option>
+            <option value="revision">🔄 Needs Revision</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-review')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Meeting Modal -->
+<div class="modal-overlay" id="modal-schedule-meeting">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title"><i class="fas fa-calendar-check"></i>Schedule Meeting</span>
+      <button class="modal-close" onclick="closeModal('modal-schedule-meeting')">✕</button>
+    </div>
+    <div class="form-group"><label>Student *</label>
+      <select id="smt-student"><option value="">Select student…</option></select>
+    </div>
+    <div class="form-group"><label><i class="fas fa-heading"></i>Meeting Title *</label>
+      <input type="text" id="smt-title" placeholder="e.g. Chapter 3 Review Session">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group"><label><i class="fas fa-tv"></i>Type</label>
+        <select id="smt-type">
+          <option value="video">Video Call</option>
+          <option value="in_person">In Person</option>
+          <option value="phone">Phone</option>
+        </select>
+      </div>
+      <div class="form-group"><label><i class="fas fa-hourglass"></i>Duration</label>
+        <select id="smt-duration">
+          <option value="30">30 minutes</option>
+          <option value="60" selected>1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+          <option value="120">2.5 hours</option>
+          <option value="120">3 hours</option>
+          <option value="120">3.5 hours</option>
+          
+
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label><i class="fas fa-calendar-days"></i>Date &amp; Time *</label>
+      <input type="datetime-local" id="smt-datetime">
+    </div>
+    <div class="form-group"><label><i class="fas fa-clipboard"></i>Agenda</label>
+      <textarea id="smt-agenda" placeholder="Topics to discuss…" rows="2"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-schedule-meeting')">Cancel</button>
+      <button class="btn btn-teal" onclick="scheduleSupMeeting()"><i class="fas fa-calendar-plus"></i> Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal-overlay" id="modal-student-detail">
+  <div class="modal modal-lg">
+    <div class="modal-hdr">
+      <span class="modal-title"><i class="fas fa-user"></i>Student Details</span>
+      <button class="modal-close" onclick="closeModal('modal-student-detail')">✕</button>
+    </div>
+    <div id="student-detail-body" style="padding:20px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-student-detail')">Close</button>
+      <button class="btn btn-amber" id="btn-msg-student" onclick="messageStudent()"><i class="fas fa-message"></i> Message</button>
+      <button class="btn btn-teal" id="btn-meet-student" onclick="meetStudent()"><i class="fas fa-video"></i> Schedule Meeting</button>
+    </div>
+  </div>
+</div>
+
+<!-- Group Workspace Modal -->
+<div class="modal-overlay" id="modal-group-workspace">
+  <div class="modal modal-xl">
+    <div class="modal-hdr">
+      <span class="modal-title"><i class="fas fa-layer-group"></i>Group Workspace</span>
+      <button class="modal-close" onclick="closeModal('modal-group-workspace')">✕</button>
+    </div>
+    <div id="group-workspace-body" style="padding:20px;"></div>
+    <div style="border-top:1px solid var(--border);padding:16px 20px;">
+      <div class="form-group"><label><i class="fas fa-comment"></i>Supervisor Feedback</label>
+        <textarea id="group-feedback" rows="4" placeholder="Leave comments that will be visible to every member of the group…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-group-workspace')">Close</button>
+      <button class="btn btn-amber" onclick="applyGroupAction('revision')"><i class="fas fa-rotate"></i> Request Revision</button>
+      <button class="btn btn-teal" onclick="applyGroupAction('approve')"><i class="fas fa-check"></i> Approve</button>
+      <button class="btn btn-blue" onclick="applyGroupAction('meeting')"><i class="fas fa-calendar-plus"></i> Schedule Meeting</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/supervisor.js"></script>
+</body>
+</html>

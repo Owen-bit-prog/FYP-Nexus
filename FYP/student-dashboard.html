@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYP Nexus — Student Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/student.css">
+<link rel="stylesheet" href="css/dashboard-mobile-fixes.css">
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect width="12" height="12" rx="3" fill="white"/>
+          <rect x="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect y="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect x="16" y="16" width="12" height="12" rx="3" fill="white" opacity=".3"/>
+        </svg>
+      </div>
+      <span class="brand-title">FYP <span>Nexus</span></span>
+    </div>
+    
+    <div class="role-badge-wrap">
+      <span class="role-badge-student"><i class="fas fa-user-graduate"></i> Student</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <a class="nav-item active" data-page="overview" onclick="navigate('overview')">
+        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>Overview
+      </a>
+      <a class="nav-item" data-page="group" onclick="navigate('group')">
+        <span class="nav-icon"><i class="fas fa-users"></i></span>My Group
+      </a>
+      <a class="nav-item" data-page="project" onclick="navigate('project')">
+        <span class="nav-icon"><i class="fas fa-folder-open"></i></span>My Project
+      </a>
+      
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Submissions</div>
+      <a class="nav-item" data-page="submissions" onclick="navigate('submissions')">
+        <span class="nav-icon"><i class="fas fa-file-arrow-up"></i></span>Submissions
+        <span class="nav-badge teal" id="badge-submissions" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="feedback" onclick="navigate('feedback')">
+        <span class="nav-icon"><i class="fas fa-comment-dots"></i></span>Feedback
+        <span class="nav-badge warn" id="badge-feedback" style="display:none">0</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Connect</div>
+      <a class="nav-item" data-page="messages" onclick="navigate('messages')">
+        <span class="nav-icon"><i class="fas fa-message"></i></span>Messages
+        <span class="nav-badge" id="badge-messages" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="meetings" onclick="navigate('meetings')">
+        <span class="nav-icon"><i class="fas fa-video"></i></span>Meetings
+        <span class="nav-badge teal" id="badge-meetings" style="display:none">0</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Account</div>
+      <a class="nav-item" data-page="profile" onclick="navigate('profile')">
+        <span class="nav-icon"><i class="fas fa-user-circle"></i></span>Profile
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ TOPBAR ════════════════════════════════════════ -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="page-breadcrumb">
+        <span>FYP Nexus</span>
+        <i class="fas fa-chevron-right" style="font-size:9px;opacity:.4;"></i>
+        <span class="cur" id="breadcrumb-label">Overview</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+      <div style="position:relative;">
+        <button class="topbar-btn" id="notif-btn" onclick="toggleNotif()">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notif-count" style="display:none">0</span>
+        </button>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-hdr">
+            <span style="font-weight:700;font-size:14px;">Notifications</span>
+            <button onclick="markAllRead()" style="background:none;border:none;color:var(--amber);font-size:12px;cursor:pointer;font-weight:700;">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;">No notifications</div>
+          </div>
+        </div>
+      </div>
+      <div class="user-chip" onclick="navigate('profile')">
+        <div class="avatar avatar-amber" id="topbar-avatar">A</div>
+        <div class="user-chip-info">
+          <div class="user-chip-name" id="topbar-name">Student</div>
+          <div class="user-chip-role">Student</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: OVERVIEW
+    ════════════════════════════════════════════════ -->
+    <section class="page active" id="page-overview">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2 id="greeting">Good morning 👋</h2>
+          <p id="greeting-sub">Here's your FYP progress at a glance.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-amber" onclick="navigate('project')">
+            <i class="fas fa-folder-open"></i> My Project
+          </button>
+        </div>
+      </div>
+
+      <!-- Problem alert banner — shown when project has flagged issues -->
+      <div class="alert-banner" id="problem-alert" style="display:none;">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+          <strong id="problem-alert-title">Action Required</strong>
+          <span id="problem-alert-body"></span>
+        </div>
+        <button onclick="dismissAlert()" style="background:none;border:none;color:inherit;cursor:pointer;margin-left:auto;"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- KPI stats -->
+      <div class="stats-grid">
+        <div class="stat-card amber">
+          <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-label">Overall Progress</div>
+          <div class="stat-value" id="stat-progress">—%</div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="stat-progress-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="fas fa-folder"></i></div>
+          <div class="stat-label">Files Submitted</div>
+          <div class="stat-value" id="stat-files">—</div>
+          <div class="stat-sub" id="stat-files-sub">— pending review</div>
+        </div>
+
+        <div class="stat-card purple">
+          <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-label">Upcoming Meetings</div>
+          <div class="stat-value" id="stat-meetings">—</div>
+          <div class="stat-sub" id="stat-meetings-sub">scheduled</div>
+        </div>
+      </div>
+
+      <!-- Project summary + activity -->
+      <div class="grid-2" style="margin-top:4px;">
+        <div class="card" id="overview-project-card">
+          <div class="card-hdr">
+            <span class="card-title">My Project</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('project')">Details <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body" id="overview-project-body">
+            <div class="skeleton" style="height:18px;width:70%;margin-bottom:10px;"></div>
+            <div class="skeleton" style="height:13px;width:100%;margin-bottom:6px;"></div>
+            <div class="skeleton" style="height:13px;width:85%;margin-bottom:16px;"></div>
+            <div class="skeleton" style="height:8px;width:100%;border-radius:99px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Recent Activity</span>
+            <span class="badge badge-gray" id="activity-count">—</span>
+          </div>
+          <div class="card-body" style="padding:0;" id="activity-feed">
+            <div style="padding:20px;">
+              <div class="skeleton" style="height:13px;width:100%;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:80%;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:90%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: MY GROUP
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-group">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2><i class="fas fa-users" style="margin-right:10px;color:var(--teal);"></i>My Group</h2>
+          <p>View your assigned project group, shared workspace, supervisor details, and team members.</p>
+        </div>
+      </div>
+
+      <div id="group-empty-state" class="empty-state" style="display:none;"></div>
+
+      <div id="group-dashboard" style="display:none;">
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">My Group</span></div>
+            <div class="card-body" id="group-overview"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Group Members</span></div>
+            <div class="card-body" id="group-members"></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Shared Project Workspace</span></div>
+            <div class="card-body" id="group-workspace"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Supervisor Information</span></div>
+            <div class="card-body" id="group-supervisor"></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Supervisor Feedback</span></div>
+            <div class="card-body" id="group-feedback"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Meetings & Notifications</span></div>
+            <div class="card-body" id="group-updates"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: MY PROJECT
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-project">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>My Project</h2>
+          <p>Manage your project details, progress, and supervisor assignment.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" id="btn-edit-project" onclick="openEditProject()" style="display:none;">
+            <i class="fas fa-pen"></i> Edit
+          </button>
+          <button class="btn btn-amber" id="btn-create-project" onclick="openCreateProject()" style="display:none;">
+            <i class="fas fa-plus"></i> Create Project
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-state" id="no-project-state" style="display:none;">
+        <div class="empty-icon">📂</div>
+        <h4>No Project Yet</h4>
+        <p>Create your FYP project to begin tracking your progress and submitting work.</p>
+        <button class="btn btn-amber" style="margin-top:18px;" onclick="openCreateProject()">
+          <i class="fas fa-plus"></i> Create Project
+        </button>
+      </div>
+
+      <div id="project-details" style="display:none;">
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-title">Project Details</span>
+              <span class="badge" id="proj-status-badge"></span>
+            </div>
+            <div class="card-body">
+              <h3 id="proj-title" style="font-family:var(--ff-display);font-size:20px;margin-bottom:8px;"></h3>
+              <p id="proj-description" style="color:var(--txt2);font-size:13px;line-height:1.6;margin-bottom:16px;"></p>
+              <div class="proj-meta-grid">
+                <div class="proj-meta-item"><span class="proj-meta-label">Category</span><span class="proj-meta-val" id="proj-category">—</span></div>
+                <div class="proj-meta-item"><span class="proj-meta-label">Start Date</span><span class="proj-meta-val" id="proj-start">—</span></div>
+                <div class="proj-meta-item"><span class="proj-meta-label">Deadline</span><span class="proj-meta-val" id="proj-deadline">—</span></div>
+                <div class="proj-meta-item"><span class="proj-meta-label">Tags</span><span class="proj-meta-val" id="proj-tags">—</span></div>
+              </div>
+              <div class="progress-wrap" style="margin-top:16px;">
+                <div class="progress-label">
+                  <span>Overall Progress</span>
+                  <span id="proj-progress-label">0%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="proj-progress-bar" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Supervisor</span></div>
+            <div class="card-body" id="supervisor-card-body">
+              <div class="supervisor-profile">
+                <div class="avatar avatar-teal" id="sup-avatar" style="width:52px;height:52px;font-size:20px;margin-right:14px;">S</div>
+                <div>
+                  <div style="font-weight:700;font-size:15px;margin-bottom:3px;" id="sup-name">—</div>
+                  <div style="font-size:12px;color:var(--txt2);" id="sup-dept">—</div>
+                  <div style="font-size:12px;color:var(--txt3);margin-top:3px;" id="sup-email">—</div>
+                </div>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:8px;">
+                <button class="btn btn-teal btn-sm" onclick="navigate('messages')"><i class="fas fa-message"></i> Message</button>
+                <button class="btn btn-ghost btn-sm" onclick="navigate('meetings')"><i class="fas fa-video"></i> Schedule Meeting</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project objectives (drawn from thesis FR list) -->
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Project Objectives Checklist</span>
+            <span class="badge badge-gray" id="objectives-progress-label">—</span>
+          </div>
+          <div class="card-body" id="objectives-checklist">
+            <div class="skeleton" style="height:40px;margin-bottom:8px;border-radius:9px;"></div>
+            <div class="skeleton" style="height:40px;margin-bottom:8px;border-radius:9px;"></div>
+            <div class="skeleton" style="height:40px;border-radius:9px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: SUBMISSIONS
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-submissions">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Submissions</h2>
+          <p>All submitted files are stored securely and can be retrieved at any time.</p>
+        </div>
+        <button class="btn btn-amber" onclick="openUploadModal()">
+          <i class="fas fa-cloud-arrow-up"></i> Upload File
+        </button>
+      </div>
+
+      <!-- Security notice (addresses document loss problem from thesis) -->
+      <div class="info-banner">
+        <i class="fas fa-shield-halved"></i>
+        <span>All files are stored in a centralized, secure database. No submission can be lost or misplaced.</span>
+      </div>
+
+      <div class="file-drop-zone" id="drop-zone" onclick="document.getElementById('file-input-hidden').click()">
+        <input type="file" id="file-input-hidden" multiple style="display:none;" onchange="handleDroppedFiles(this.files)">
+        <div class="drop-icon"><i class="fas fa-upload"></i></div>
+        <p>Drop files here or click to upload</p>
+        <small>PDF, DOCX, ZIP, PPT, XLS — max 50MB per file</small>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="card-hdr">
+          <span class="card-title">Submitted Files</span>
+          <select class="filter-select-sm" id="files-filter" onchange="filterFiles()">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="revision">Needs Revision</option>
+          </select>
+        </div>
+        <div class="card-body" style="padding:12px 16px;" id="files-list">
+          <div class="skeleton" style="height:58px;border-radius:9px;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:58px;border-radius:9px;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:58px;border-radius:9px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: FEEDBACK
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-feedback">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Feedback</h2>
+          <p>Review comments, grades, and revision requests from your supervisor.</p>
+        </div>
+      </div>
+
+      <div class="feedback-stats" id="feedback-stats">
+        <div class="fb-stat green"><i class="fas fa-circle-check"></i><span id="fb-approved">0</span><small>Approved</small></div>
+        <div class="fb-stat amber"><i class="fas fa-rotate"></i><span id="fb-revision">0</span><small>Needs Revision</small></div>
+        <div class="fb-stat gray"><i class="fas fa-clock"></i><span id="fb-pending">0</span><small>Awaiting Review</small></div>
+      </div>
+
+      <!-- Revision alert -->
+      <div class="alert-banner alert-amber" id="revision-alert" style="display:none;">
+        <i class="fas fa-rotate"></i>
+        <div><strong>Revision Required</strong> <span id="revision-alert-body">You have submissions that need to be revised and resubmitted.</span></div>
+        <button class="btn btn-amber btn-sm" onclick="navigate('submissions')" style="margin-left:auto;">View Files</button>
+      </div>
+
+      <div class="card" style="margin-top:0;">
+        <div class="card-hdr"><span class="card-title">Reviewed Submissions</span></div>
+        <div id="feedback-list" style="padding:12px 16px;">
+          <div class="skeleton" style="height:80px;border-radius:9px;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:80px;border-radius:9px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: MESSAGES
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-messages">
+      <div class="page-hdr" style="margin-bottom:16px;">
+        <div class="page-title-block">
+          <h2>Messages</h2>
+          <p>Direct communication channel with your supervisor — all messages are recorded.</p>
+        </div>
+      </div>
+
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-hdr">
+            <i class="fas fa-message" style="margin-right:8px;color:var(--amber);"></i> Conversations
+          </div>
+          <div class="chat-contacts" id="chat-contacts">
+            <div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px;">Loading…</div>
+          </div>
+        </div>
+
+        <div class="chat-main" id="chat-main">
+          <div class="chat-topbar" id="chat-topbar">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar avatar-teal" id="chat-partner-avatar">?</div>
+              <div>
+                <div style="font-weight:700;font-size:13px;" id="chat-partner-name">Select a conversation</div>
+                <div style="font-size:11px;color:var(--txt3);" id="chat-partner-status">—</div>
+              </div>
+            </div>
+            <button class="btn btn-teal btn-sm" onclick="startVideoCall()" id="btn-video-call" style="display:none;">
+              <i class="fas fa-video"></i> Video Call
+            </button>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="empty-state" style="margin:auto;">
+              <div class="empty-icon"></div>
+              <h4>No conversation selected</h4>
+              <p>Choose a contact on the left to start messaging.</p>
+            </div>
+          </div>
+          <div class="chat-input-row" id="chat-input-row" style="display:none;">
+            <textarea class="chat-input" id="chat-input" placeholder="Type a message…" rows="1" onkeydown="chatKeydown(event)"></textarea>
+            <button class="btn btn-amber" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: MEETINGS
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-meetings">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Meetings</h2>
+          <p>Schedule in-person, phone, or video meetings with your supervisor.</p>
+        </div>
+        <button class="btn btn-amber" onclick="openScheduleMeeting()">
+          <i class="fas fa-plus"></i> Schedule Meeting
+        </button>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-hdr">
+          <span class="card-title">Upcoming Meetings</span>
+          <span class="badge badge-teal" id="upcoming-count">0</span>
+        </div>
+        <div id="upcoming-meetings" style="padding:12px 16px;">
+          <div class="skeleton" style="height:70px;border-radius:9px;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:70px;border-radius:9px;"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Past Meetings</span></div>
+        <div id="past-meetings" style="padding:12px 16px;">
+          <div class="skeleton" style="height:60px;border-radius:9px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         PAGE: PROFILE
+    ════════════════════════════════════════════════ -->
+    <section class="page" id="page-profile">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>My Profile</h2>
+          <p>Manage your personal information and account settings.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Personal Info</span></div>
+          <div class="card-body">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar-wrap">
+                <div class="avatar avatar-amber" id="profile-avatar-display" style="width:72px;height:72px;font-size:28px;">A</div>
+                <label class="avatar-upload-btn" for="avatar-file-input" title="Change photo">
+                  <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" id="avatar-file-input" accept="image/*" onchange="uploadAvatar(this)" style="display:none;">
+              </div>
+              <div>
+                <div style="font-family:var(--ff-display);font-size:20px;font-weight:700;" id="profile-name-display">—</div>
+                <div style="font-size:12px;color:var(--txt2);margin-top:3px;" id="profile-id-display">—</div>
+                <span class="badge badge-amber" style="margin-top:6px;">Student</span>
+              </div>
+            </div>
+
+            <form id="profile-form" onsubmit="saveProfile(event)" style="margin-top:20px;">
+              <div class="form-group"><label>Full Name</label><input type="text" id="pf-name" required></div>
+              <div class="form-group"><label>Email</label><input type="email" id="pf-email" readonly style="opacity:.6;cursor:not-allowed;"></div>
+              <div class="grid-2" style="gap:12px;">
+                <div class="form-group">
+                  <label>Department</label>
+                  <select id="pf-dept">
+                    <option value="">Select department</option>
+                    <option>Computer Science</option>
+                    <option>Engineering</option>
+                    <option>Information Technology</option>
+                    <option>Data Science</option>
+                    <option>Cybersecurity</option>
+                    <option>Mathematics</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Phone</label><input type="text" id="pf-phone" placeholder="+233 XX XXX XXXX"></div>
+              </div>
+              <div class="form-group"><label>Bio</label><textarea id="pf-bio" placeholder="Tell your supervisor a bit about yourself…" rows="3"></textarea></div>
+              <button type="submit" class="btn btn-amber btn-full"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+            </form>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-hdr"><span class="card-title">Account Details</span></div>
+            <div class="card-body">
+              <div class="info-row"><span>Student ID</span><strong id="info-student-id">—</strong></div>
+              <div class="info-row"><span>Email</span><strong id="info-email">—</strong></div>
+              <div class="info-row"><span>Department</span><strong id="info-dept">—</strong></div>
+              <div class="info-row"><span>Role</span><strong>Student</strong></div>
+              <div class="info-row"><span>Member Since</span><strong id="info-since">—</strong></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Change Password</span></div>
+            <div class="card-body">
+              <form onsubmit="changePassword(event)">
+                <div class="form-group"><label>Current Password</label><input type="password" id="pw-current" placeholder="••••••••"></div>
+                <div class="form-group"><label>New Password</label><input type="password" id="pw-new" placeholder="Min. 8 characters"></div>
+                <div class="form-group"><label>Confirm New Password</label><input type="password" id="pw-confirm" placeholder="Repeat new password"></div>
+                <button type="submit" class="btn btn-ghost btn-full"><i class="fas fa-lock"></i> Update Password</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══ VIDEO CALL OVERLAY ══════════════════════════ -->
+<div id="video-overlay">
+  <div class="vc-topbar">
+    <div>
+      <div class="vc-title" id="vc-title">Video Call</div>
+      <div class="vc-status"><span class="dot"></span><span id="vc-status-txt">Connecting…</span></div>
+    </div>
+    <div class="vc-timer" id="vc-timer">00:00</div>
+  </div>
+  <div class="vc-body" id="vc-body">
+    <div class="vc-pane" id="vc-local">
+      <video id="local-video" autoplay muted playsinline></video>
+      <div class="vc-avatar" id="vc-local-placeholder">🎓</div>
+      <div class="vc-pane-name" id="vc-local-name">You</div>
+    </div>
+    <div class="vc-pane" id="vc-remote">
+      <video id="remote-video" autoplay playsinline></video>
+      <div class="vc-avatar" id="vc-remote-placeholder">👨‍🏫</div>
+      <div class="vc-pane-name" id="vc-remote-name">Supervisor</div>
+    </div>
+  </div>
+  <div class="vc-controls">
+    <div class="vc-btn-wrap">
+      <button class="vc-btn vc-btn-on" id="btn-mic" onclick="toggleMic()"><i class="fas fa-microphone"></i></button>
+      <span class="vc-btn-label">Mic</span>
+    </div>
+    <div class="vc-btn-wrap">
+      <button class="vc-btn vc-btn-on" id="btn-cam" onclick="toggleCam()"><i class="fas fa-video"></i></button>
+      <span class="vc-btn-label">Camera</span>
+    </div>
+    <div class="vc-btn-wrap">
+      <button class="vc-btn vc-btn-default" onclick="toggleScreen()"><i class="fas fa-display"></i></button>
+      <span class="vc-btn-label">Share</span>
+    </div>
+    <div class="vc-btn-wrap">
+      <button class="vc-btn vc-btn-end" onclick="endCall()"><i class="fas fa-phone-slash"></i></button>
+      <span class="vc-btn-label">End Call</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ════════════════════════════════════════ -->
+
+<!-- Create Project -->
+<div class="modal-overlay" id="modal-create-project">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Create New Project</span><button class="modal-close" onclick="closeModal('modal-create-project')">✕</button></div>
+    <div class="form-group"><label>Project Title *</label><input type="text" id="cp-title" placeholder="e.g. AI-Based Attendance System"></div>
+    <div class="form-group"><label>Description</label><textarea id="cp-desc" placeholder="Briefly describe your project goals and scope…" rows="3"></textarea></div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="cp-category">
+          <option value="">Select category</option>
+          <option>Artificial Intelligence</option><option>Web Development</option>
+          <option>Mobile Development</option><option>IoT &amp; Embedded Systems</option>
+          <option>Cybersecurity</option><option>Data Science</option>
+          <option>Networking</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Deadline</label><input type="date" id="cp-deadline"></div>
+    </div>
+    <div class="form-group"><label>Supervisor Email</label><input type="email" id="cp-supervisor" placeholder="supervisor@university.edu"></div>
+    <div class="form-group"><label>Tags</label><input type="text" id="cp-tags" placeholder="e.g. AI, Python, Deep Learning"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-create-project')">Cancel</button>
+      <button class="btn btn-amber" onclick="createProject()"><i class="fas fa-plus"></i> Create Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Project -->
+<div class="modal-overlay" id="modal-edit-project">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Edit Project</span><button class="modal-close" onclick="closeModal('modal-edit-project')">✕</button></div>
+    <div class="form-group"><label>Project Title *</label><input type="text" id="ep-title"></div>
+    <div class="form-group"><label>Description</label><textarea id="ep-desc" rows="3"></textarea></div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="ep-category">
+          <option value="">Select category</option>
+          <option>Artificial Intelligence</option><option>Web Development</option>
+          <option>Mobile Development</option><option>IoT &amp; Embedded Systems</option>
+          <option>Cybersecurity</option><option>Data Science</option>
+          <option>Networking</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Deadline</label><input type="date" id="ep-deadline"></div>
+    </div>
+    <div class="form-group"><label>Tags</label><input type="text" id="ep-tags"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-project')">Cancel</button>
+      <button class="btn btn-amber" onclick="saveEditProject()"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Proposal -->
+<div class="modal-overlay" id="modal-proposal">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-hdr"><span class="modal-title">Submit Project Proposal</span><button class="modal-close" onclick="closeModal('modal-proposal')">✕</button></div>
+    <div class="form-group"><label>Proposal Title *</label><input type="text" id="prop-title" placeholder="e.g. AI-Based University Attendance System"></div>
+    <div class="form-group"><label>Problem Statement *</label><textarea id="prop-problem" placeholder="Describe the problem your project addresses…" rows="3"></textarea></div>
+    <div class="form-group"><label>Aim &amp; Objectives *</label><textarea id="prop-objectives" placeholder="State your main aim and list your objectives…" rows="3"></textarea></div>
+    <div class="form-group"><label>Proposed Methodology</label><textarea id="prop-method" placeholder="e.g. Waterfall SDLC — phases: analysis, design, implementation, testing, deployment…" rows="2"></textarea></div>
+    <div class="form-group"><label>Notes / Additional Context</label><textarea id="prop-notes" placeholder="Any extra context for your supervisor…" rows="2"></textarea></div>
+    <div class="form-group">
+      <label>Attach Proposal Document *</label>
+      <div class="file-drop-zone" id="proposal-drop-zone" style="padding:20px;" onclick="document.getElementById('proposal-file-input').click()">
+        <input type="file" id="proposal-file-input" style="display:none;" accept=".pdf,.doc,.docx" onchange="previewProposalFile(this)">
+        <div class="drop-icon" style="font-size:24px;">📎</div>
+        <p id="proposal-file-label">Click to attach PDF or DOCX</p>
+        <small>Max 50MB</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-proposal')">Cancel</button>
+      <button class="btn btn-amber" onclick="submitProposal()"><i class="fas fa-paper-plane"></i> Submit for Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Milestone -->
+<div class="modal-overlay" id="modal-add-milestone">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Add Milestone</span><button class="modal-close" onclick="closeModal('modal-add-milestone')">✕</button></div>
+    <div class="form-group"><label>Milestone Title *</label><input type="text" id="ms-title" placeholder="e.g. Literature Review"></div>
+    <div class="form-group"><label>Description</label><textarea id="ms-desc" placeholder="What deliverables are required for this milestone…" rows="2"></textarea></div>
+    <div class="form-group"><label>Due Date</label><input type="date" id="ms-due"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-milestone')">Cancel</button>
+      <button class="btn btn-amber" onclick="addMilestone()"><i class="fas fa-plus"></i> Add Milestone</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload File -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Submit File</span><button class="modal-close" onclick="closeModal('modal-upload')">✕</button></div>
+    <div class="form-group"><label>Submission Title</label><input type="text" id="up-title" placeholder="e.g. Chapter 3 — System Design"></div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group">
+        <label>Submission Type</label>
+        <select id="up-type">
+          <option value="chapter">Chapter</option>
+          <option value="report">Report</option>
+          <option value="code">Code</option>
+          <option value="presentation">Presentation</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Linked Milestone</label>
+        <select id="up-milestone"><option value="">None</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Notes for Supervisor</label><textarea id="up-notes" placeholder="Context or instructions about this submission…" rows="2"></textarea></div>
+    <div class="form-group">
+      <label>File *</label>
+      <div class="file-drop-zone" id="modal-drop-zone" style="padding:24px;" onclick="document.getElementById('modal-file-input').click()">
+        <input type="file" id="modal-file-input" style="display:none;" onchange="previewUpload(this)">
+        <div class="drop-icon" style="font-size:28px;">📎</div>
+        <p id="upload-file-label">Click to select file</p>
+        <small>Max 100MB</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-upload')">Cancel</button>
+      <button class="btn btn-amber" onclick="uploadFile()"><i class="fas fa-cloud-arrow-up"></i> Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Meeting -->
+<div class="modal-overlay" id="modal-meeting">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Schedule Meeting</span><button class="modal-close" onclick="closeModal('modal-meeting')">✕</button></div>
+    <div class="form-group"><label>Meeting Title *</label><input type="text" id="mt-title" placeholder="e.g. Chapter 3 Review Session"></div>
+    <div class="grid-2" style="gap:12px;">
+      <div class="form-group">
+        <label>Meeting Type</label>
+        <select id="mt-type">
+          <option value="video">Video Call</option>
+          <option value="in_person">In Person</option>
+          <option value="phone">Phone</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Duration</label>
+        <select id="mt-duration">
+          <option value="30">30 minutes</option>
+          <option value="60" selected>1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Date &amp; Time *</label><input type="datetime-local" id="mt-datetime"></div>
+    <div class="form-group"><label>Agenda</label><textarea id="mt-agenda" placeholder="Topics to be discussed…" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-meeting')">Cancel</button>
+      <button class="btn btn-amber" onclick="scheduleMeeting()"><i class="fas fa-calendar-plus"></i> Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Detail -->
+<div class="modal-overlay" id="modal-feedback-detail">
+  <div class="modal">
+    <div class="modal-hdr"><span class="modal-title">Feedback Detail</span><button class="modal-close" onclick="closeModal('modal-feedback-detail')">✕</button></div>
+    <div id="feedback-detail-body"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-feedback-detail')">Close</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/student.js"></script>
+</body>
+</html>

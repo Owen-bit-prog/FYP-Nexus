@@ -1,0 +1,192 @@
+/* Mobile performance optimizations for dashboard.css */
+
+/* Phones ≤520px - Performance mode */
+@media (max-width: 520px) {
+  /* Reduce animation complexity */
+  * {
+    --animation-duration: 0.2s;
+    --transition-duration: 0.15s;
+  }
+
+  /* Aggressive performance optimizations */
+  button, a, .btn, input, select, textarea {
+    transition-duration: 0.15s;
+    transition-property: background-color, opacity, border-color;
+  }
+
+  /* Disable GPU-heavy effects */
+  .card, .modal, .student-card {
+    will-change: unset;
+    transform: none !important;
+  }
+
+  .card:hover, .student-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transform: none !important;
+  }
+
+  /* Reduce stat card complexity */
+  .stat-card {
+    transition: background-color 0.15s;
+  }
+
+  .stat-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Simplify shadow system */
+  .modal, .card, .student-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Disable backdrop filters on low-end phones */
+  #topbar, .modal-overlay, .notif-dropdown {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Reduce animation frame rate */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInPhone {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 4px rgba(232,168,56,0.2); }
+    50% { box-shadow: 0 0 6px rgba(232,168,56,0.4); }
+  }
+
+  @keyframes vcRing {
+    0% { box-shadow: 0 0 0 0 rgba(232,168,56,0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(232,168,56,0); }
+    100% { box-shadow: 0 0 0 0 rgba(232,168,56,0); }
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes popInPhone {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { opacity: 0.6; }
+    100% { opacity: 0.6; }
+  }
+
+  /* Remove text shadows for performance */
+  .page-title-block h2, .card-title, .modal-title {
+    text-shadow: none;
+  }
+
+  /* Optimize font rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Minimize repaints */
+  .topbar-btn, .nav-item, .chat-contact {
+    transition: background-color 0.15s;
+  }
+
+  .topbar-btn:hover, .nav-item:hover, .chat-contact:hover {
+    background-color: rgba(255,255,255,0.04);
+  }
+
+  /* Reduce color transitions */
+  .btn-amber:hover, .btn-teal:hover, .btn-blue:hover {
+    transform: none;
+    filter: brightness(1.1);
+  }
+
+  /* Optimize scrolling */
+  #main-content, .chat-messages, .notif-list, .sync-list {
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Reduce form interaction complexity */
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    box-shadow: none;
+    border-color: #e8a838;
+    outline: none;
+  }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .page, .card, .modal, .student-card, .skeleton {
+    animation: none !important;
+  }
+
+  .page, .modal, .card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  button:active, a:active, .btn:active {
+    opacity: 0.8;
+  }
+
+  .stat-card, .student-card, .meeting-card {
+    transition: background-color 0.15s;
+  }
+
+  .stat-card:hover, .student-card:hover, .meeting-card:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+}
+
+/* Ultra-small phones (≤360px) */
+@media (max-width: 360px) {
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .page-title-block h2 {
+    font-size: 18px;
+  }
+
+  .card-title, .modal-title {
+    font-size: 14px;
+  }
+
+  .btn, button {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .modal {
+    padding: 16px 12px;
+    border-radius: 12px;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+
+  .stats-grid {
+    gap: 8px;
+  }
+}

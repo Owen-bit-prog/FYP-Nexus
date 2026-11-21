@@ -1,0 +1,209 @@
+/* Mobile-specific keyframe optimizations & performance fixes for auth.css */
+
+/* Reduce all animations on phones for better performance */
+@media (max-width: 520px) {
+  /* Disable expensive animations */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.15s !important;
+  }
+
+  /* Disable background orbs completely on mobile */
+  .orb {
+    display: none !important;
+  }
+
+  .bg-canvas {
+    background: linear-gradient(160deg, #0e1117 0%, #0d1520 100%);
+  }
+
+  /* Simplify mobile brand bar */
+  .mobile-brand {
+    padding: 12px 16px;
+  }
+
+  .mobile-brand-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Optimize auth layout for phones */
+  .auth-wrap {
+    flex-direction: column;
+  }
+
+  .panel-left {
+    display: none !important;
+  }
+
+  .panel-right {
+    padding: 12px 16px;
+    min-height: 100vh;
+  }
+
+  /* Smaller auth card on phones */
+  .auth-card {
+    padding: 24px 18px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    animation: cardInPhone 0.3s 0.05s cubic-bezier(0.34,1.56,0.64,1) both !important;
+  }
+
+  @keyframes cardInPhone {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Reduce feature card animation delays */
+  .feat-card {
+    animation-delay: 0s !important;
+  }
+
+  /* Optimize form fields for touch */
+  .field-group input,
+  .field-group textarea,
+  .field-group select {
+    font-size: 16px;
+    padding: 12px 12px;
+    min-height: 44px;
+  }
+
+  /* Button min-touch-size */
+  .btn, button, .auth-tab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce backdrop filter on phones for performance */
+  .auth-card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(22,27,38,0.95);
+  }
+
+  /* Smaller tabs */
+  .auth-tabs {
+    gap: 0;
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  /* Simplify role picker on phones */
+  .role-picker {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* Input row for phones */
+  .field-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Register form optimization */
+  .field-group {
+    margin-bottom: 12px;
+  }
+
+  .form-head h2 {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  .form-head p {
+    font-size: 12px;
+  }
+
+  /* Reduce shadow complexity */
+  .auth-card::before,
+  .auth-card::after {
+    display: none;
+  }
+
+  /* Smooth scrolling within form */
+  .auth-form input {
+    scroll-behavior: smooth;
+  }
+
+  /* Disable GPU-heavy filters on lower-end phones */
+  .bg-grid {
+    opacity: 0.3;
+  }
+
+  /* Reduce button hover effects on mobile */
+  .btn:hover {
+    transform: none;
+  }
+
+  button:active {
+    opacity: 0.8;
+  }
+}
+
+/* Accessibility: Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .orb {
+    animation: none !important;
+  }
+
+  .auth-card,
+  .panel-left,
+  .feat-card,
+  .panel-bottom,
+  .form-head {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .toast {
+    transition: opacity 0.2s !important;
+  }
+}
+
+/* Ultra-small phones (≤360px) */
+@media (max-width: 360px) {
+  .auth-card {
+    padding: 18px 14px;
+  }
+
+  .form-head h2 {
+    font-size: 18px;
+  }
+
+  .field-group input,
+  .field-group textarea,
+  .field-group select {
+    font-size: 16px;
+    padding: 10px 10px;
+  }
+
+  .btn, button {
+    padding: 8px 12px;
+  }
+
+  .feat-card {
+    padding: 8px;
+  }
+
+  .feat-card h3 {
+    font-size: 11px;
+  }
+
+  .feat-card p {
+    font-size: 9px;
+  }
+}

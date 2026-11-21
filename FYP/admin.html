@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYP Nexus — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/dashboard-mobile-fixes.css">
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect width="12" height="12" rx="3" fill="white"/>
+          <rect x="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect y="16" width="12" height="12" rx="3" fill="white" opacity=".6"/>
+          <rect x="16" y="16" width="12" height="12" rx="3" fill="white" opacity=".3"/>
+        </svg>
+      </div>
+      <span class="brand-title">FYP <span>Nexus</span></span>
+    </div>
+
+    <div class="role-badge-wrap">
+      <span class="role-badge-admin"><i class="fas fa-shield-halved"></i> Administrator</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Dashboard</div>
+      <a class="nav-item active" data-page="Overview" onclick="navigate('overview')">
+        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>Overview
+      </a>
+      <a class="nav-item" data-page="Analytics" onclick="navigate('analytics')">
+        <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>Analytics
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Management</div>
+      <a class="nav-item" data-page="users" onclick="navigate('users')">
+        <span class="nav-icon"><i class="fas fa-users-cog"></i></span>Users
+        <span class="nav-badge" id="badge-users" style="display:none">0</span>
+      </a>
+      <a class="nav-item" data-page="projects" onclick="navigate('projects')">
+        <span class="nav-icon"><i class="fas fa-folder-open"></i></span>All Projects
+      </a>
+      <a class="nav-item" data-page="groups" onclick="navigate('groups')">
+        <span class="nav-icon"><i class="fas fa-layer-group"></i></span>Group Management
+      </a>
+      <a class="nav-item" data-page="assignments" onclick="navigate('assignments')">
+        <span class="nav-icon"><i class="fas fa-link"></i></span>Assignments
+        <span class="nav-badge warn" id="badge-assignments" style="display:none">0</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">System</div>
+      <a class="nav-item" data-page="activity" onclick="navigate('activity')">
+        <span class="nav-icon"><i class="fas fa-clock-rotate-left"></i></span>Activity Log
+      </a>
+      <a class="nav-item" data-page="settings" onclick="navigate('settings')">
+        <span class="nav-icon"><i class="fas fa-gear"></i></span>Settings
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ TOPBAR ════════════════════════════════════════ -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="page-breadcrumb">
+        <span>FYP Nexus</span>
+        <i class="fas fa-chevron-right" style="font-size:9px;opacity:.4;"></i>
+        <span class="cur" id="breadcrumb-label">Overview</span>
+      </div>
+      
+    </div>
+    <div class="topbar-right">
+      <div style="position:relative;">
+        <button class="topbar-btn" id="notif-btn" onclick="toggleNotif()">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notif-count" style="display:none">0</span>
+        </button>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-hdr">
+            <span style="font-weight:700;font-size:14px;">Notifications</span>
+            <button onclick="markAllRead()" style="background:none;border:none;color:var(--amber);font-size:12px;cursor:pointer;font-weight:700;">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;">No notifications</div>
+          </div>
+        </div>
+      </div>
+      <div class="user-chip" onclick="navigate('settings')">
+        <div class="avatar avatar-red" id="topbar-avatar">A</div>
+        <div class="user-chip-info">
+          <div class="user-chip-name" id="topbar-name">Admin</div>
+          <div class="user-chip-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ════ PAGE: OVERVIEW ════ -->
+    <section class="page active" id="page-overview">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2 id="greeting">Good morning, Admin 👋</h2>
+          <p id="greeting-sub">System status overview and quick actions.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button id="btn-manage-users" class="btn btn-admin" onclick="navigate('users')">
+            <i class="fas fa-users-cog"></i> Manage Users
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI grid -->
+      <div class="stats-grid stats-grid-6">
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="stat-students">—</div>
+          <div class="stat-sub">registered</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon"><i class="fas fa-chalkboard-teacher "></i></div>
+          <div class="stat-label">Supervisors</div>
+          <div class="stat-value" id="stat-supervisors">—</div>
+          <div class="stat-sub">active</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+          <div class="stat-label">Total Groups</div>
+          <div class="stat-value" id="stat-groups">—</div>
+          <div class="stat-sub">created</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon"><i class="fas fa-user-slash unassigned-icon "></i></div>
+          <div class="stat-label">Unassigned Students</div>
+          <div class="stat-value" id="stat-unassigned-students">—</div>
+          <div class="stat-sub">without groups</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+          <div class="stat-label">Groups Without Supervisors</div>
+          <div class="stat-value" id="stat-groups-no-supervisor">—</div>
+          <div class="stat-sub">pending assignment</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="fas fa-rocket"></i></div>
+          <div class="stat-label">Active Projects</div>
+          <div class="stat-value" id="stat-active-projects">—</div>
+          <div class="stat-sub">currently active</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:4px;">
+        <!-- Recent users -->
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Recent Users</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('users')">View All <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body" id="overview-users-list">
+            <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:48px;border-radius:8px;"></div>
+          </div>
+        </div>
+
+        <!-- Unassigned projects -->
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Unassigned Projects</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('assignments')">Assign <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body" id="overview-unassigned-list">
+            <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px;"></div>
+            <div class="skeleton" style="height:48px;border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project status chart -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-hdr">
+          <span class="card-title">Project Status Distribution</span>
+        </div>
+        <div class="card-body" id="status-chart-wrap">
+          <div id="status-chart-bars" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: ANALYTICS ════ -->
+    <section class="page" id="page-analytics">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Analytics</h2>
+          <p>System-wide performance and usage statistics</p>
+        </div>
+      </div>
+      <div class="analytics-grid">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Submission Activity</span></div>
+          <div class="card-body" id="analytics-submissions"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Department Breakdown</span></div>
+          <div class="card-body" id="analytics-departments"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Supervisor Workload</span></div>
+          <div class="card-body" id="analytics-supervisors"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Project Progress Distribution</span></div>
+          <div class="card-body" id="analytics-progress"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: USERS ════ -->
+    <section class="page" id="page-users">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>User Management</h2>
+          <p>Manage students, supervisors, and administrators</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="search-bar" style="min-width:200px;">
+            <i class="fas fa-search" style="color:var(--txt3);font-size:13px;"></i>
+            <input type="text" id="users-search" placeholder="Search users…" oninput="filterUsers(this.value)">
+          </div>
+          <select class="filter-select" id="users-role-filter" onchange="filterUsers()">
+            <option value="all">All Roles</option>
+            <option value="student">Students</option>
+            <option value="supervisor">Supervisors</option>
+            <option value="admin">Admins</option>
+          </select>
+          <button class="btn btn-admin" onclick="openModal('modal-add-user')">
+            <i class="fas fa-user-plus"></i> Add User
+          </button>
+        </div>
+      </div>
+      <div id="users-table-wrap">
+        <table class="data-table" id="users-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th>Student ID</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--txt3);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: ALL PROJECTS ════ -->
+    <section class="page" id="page-projects">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>All Projects</h2>
+          <p>Monitor every project in the system</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div class="search-bar" style="min-width:200px;">
+            <i class="fas fa-search" style="color:var(--txt3);font-size:13px;"></i>
+            <input type="text" id="proj-search" placeholder="Search projects…" oninput="filterProjects(this.value)">
+          </div>
+          <select class="filter-select" onchange="filterProjects()" id="proj-status-filter">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="under_review">Under Review</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div id="projects-table-wrap">
+        <table class="data-table" id="projects-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Student</th>
+              <th>Supervisor</th>
+              <th>Status</th>
+              <th>Progress</th>
+              <th>Deadline</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="projects-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--txt3);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: GROUP MANAGEMENT ════ -->
+    <section class="page" id="page-groups">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Group Management</h2>
+          <p>Create and manage student project groups from a single admin panel.</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="search-bar" style="min-width:220px;flex:1;">
+            <i class="fas fa-search" style="color:var(--txt3);font-size:13px;"></i>
+            <input type="text" id="groups-search" placeholder="Search groups…" oninput="renderGroupsTable()">
+          </div>
+          <select class="filter-select" id="group-status-filter" onchange="renderGroupsTable()">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="under_review">Under Review</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button class="btn btn-ghost" onclick="autoGenerateGroups()">
+            <i class="fas fa-plus-circle"></i> Create Group
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Unassigned Students</span><span class="badge badge-teal" id="unassigned-students-count">0</span></div>
+          <div class="card-body">
+            <div class="form-group"><label>Group Name</label>
+              <input type="text" id="group-name-input" placeholder="Project Group 01">
+            </div>
+            <div class="form-group"><label>Group Access Code</label>
+              <input type="text" id="group-access-code" placeholder="G001" readonly>
+            </div>
+            <div class="form-group"><label>Group Size *</label>
+              <select id="group-size-select" onchange="resetGroupSelection(); updateGroupAccessCode();">
+                <option value="">Choose size</option>
+                <option value="3">Groups of 3</option>
+                <option value="4">Groups of 4</option>
+                <option value="5">Groups of 5</option>
+              </select>
+            </div>
+            <div class="search-bar" style="margin:0 0 14px;">
+              <i class="fas fa-search" style="color:var(--txt3);font-size:13px;"></i>
+              <input type="text" id="student-search" placeholder="Search students by name or index…" oninput="renderUnassignedStudents()">
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+              <span id="group-selection-hint" style="font-size:13px;color:var(--txt3);">Pick students to form a new group.</span>
+              <button class="btn btn-admin" id="btn-create-group" onclick="createGroup()" disabled><i class="fas fa-plus-circle"></i> Create Group</button>
+            </div>
+            <div id="group-validation-msg" style="font-size:13px;color:var(--red);margin-bottom:12px;"></div>
+            <div id="unassigned-students-wrap" style="max-height:520px;overflow-y:auto;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Existing Groups</span><span class="badge badge-purple" id="group-count-badge">0</span></div>
+          <div class="card-body">
+            <div id="groups-table-wrap" style="overflow-x:auto;">
+              <table class="data-table" id="groups-table">
+                <thead>
+                  <tr>
+                    <th>Group ID</th>
+                    <th>Members</th>
+                    <th>Student Names</th>
+                    <th>Supervisor</th>
+                    <th>Project Title</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="groups-tbody">
+                  <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--txt3);">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="groups-pagination" style="display:flex;justify-content:flex-end;gap:8px;padding-top:12px;font-size:13px;color:var(--txt3);"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: ASSIGNMENTS ════ -->
+    <section class="page" id="page-assignments">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Supervisor Assignments</h2>
+          <p>Assign supervisors to unassigned student projects</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Unassigned Projects</span><span class="badge badge-amber" id="unassigned-count-badge">0</span></div>
+          <div class="card-body" id="unassigned-projects-list" style="max-height:520px;overflow-y:auto;">
+            <div class="skeleton" style="height:80px;border-radius:10px;margin-bottom:10px;"></div>
+            <div class="skeleton" style="height:80px;border-radius:10px;margin-bottom:10px;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Available Supervisors</span></div>
+          <div class="card-body" id="supervisors-panel-list" style="max-height:520px;overflow-y:auto;">
+            <div class="skeleton" style="height:64px;border-radius:10px;margin-bottom:10px;"></div>
+            <div class="skeleton" style="height:64px;border-radius:10px;margin-bottom:10px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: ACTIVITY LOG ════ -->
+    <section class="page" id="page-activity">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>Activity Log</h2>
+          <p>System-wide user actions and events</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <select class="filter-select" id="activity-filter" onchange="loadActivity()">
+            <option value="all">All Actions</option>
+            <option value="login">Logins</option>
+            <option value="upload">Uploads</option>
+            <option value="message">Messages</option>
+            <option value="meeting">Meetings</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" id="activity-log-list" style="max-height:600px;overflow-y:auto;">
+          <div style="padding:32px;text-align:center;color:var(--txt3);">Loading activity log…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: SETTINGS ════ -->
+    <section class="page" id="page-settings">
+      <div class="page-hdr">
+        <div class="page-title-block">
+          <h2>System Settings</h2>
+          <p>Configure application-wide options</p>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Admin Profile</span></div>
+          <div class="card-body">
+            <div class="profile-avatar-section" style="margin-bottom:20px;">
+              <div class="avatar avatar-red avatar-xl" id="admin-avatar-display">A</div>
+              <div>
+                <h3 id="admin-name-display">—</h3>
+                <p style="color:var(--txt2);font-size:13px;" id="admin-email-display">—</p>
+                <span class="badge badge-red" style="margin-top:6px;">Admin</span>
+              </div>
+            </div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="admin-prof-name"></div>
+            <div class="form-group"><label>New Password</label>
+              <div class="pass-wrap"><input type="password" id="admin-prof-pass" placeholder="Leave blank to keep current"><button class="pass-toggle" onclick="togglePass('admin-prof-pass')">👁</button></div>
+            </div>
+            <button class="btn btn-admin" onclick="saveAdminProfile()"><i class="fas fa-save"></i> Save</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Platform Settings</span></div>
+          <div class="card-body">
+            <div class="form-group"><label>Platform Name</label><input type="text" id="cfg-name" value="FYP Nexus"></div>
+            <div class="form-group"><label>Max File Upload Size (MB)</label><input type="number" id="cfg-maxfile" value="50" min="1" max="500"></div>
+            <div class="form-group"><label>Allowed Roles for Self-Registration</label>
+              <select id="cfg-selfreg">
+                <option value="student_only">Students Only</option>
+                <option value="all">Students &amp; Supervisors</option>
+                <option value="none">Disabled (Admin Only)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="checkbox" id="cfg-notifications" checked style="accent-color:var(--amber);width:16px;height:16px;">
+                Enable Email Notifications
+              </label>
+            </div>
+            <button class="btn btn-admin" onclick="savePlatformSettings()"><i class="fas fa-save"></i> Save Settings</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Database Stats</span></div>
+          <div class="card-body" id="db-stats-body">
+            <div style="color:var(--txt3);font-size:13px;">Loading system stats…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════ -->
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Add New User</span>
+      <button class="modal-close" onclick="closeModal('modal-add-user')">✕</button>
+    </div>
+    <div class="form-group"><label>Full Name *</label><input type="text" id="nu-name" placeholder="John Doe"></div>
+    <div class="form-group"><label>Email *</label><input type="email" id="nu-email" placeholder="user@university.edu"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group"><label>Role *</label>
+        <select id="nu-role" onchange="toggleStudentId()">
+          <option value="student">Student</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group" id="nu-studentid-group"><label>Student ID</label>
+        <input type="text" id="nu-studentid" placeholder="CS/2024/001">
+      </div>
+    </div>
+    <div class="form-group"><label>Department</label>
+      <select id="nu-dept">
+        <option value="">Select department</option>
+        <option>Computer Science</option>
+        <option>Engineering</option>
+        <option>Information Technology</option>
+        <option>Data Science</option>
+        <option>Cybersecurity</option>
+        <option>Mathematics</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Temporary Password *</label>
+      <div class="pass-wrap"><input type="password" id="nu-pass" placeholder="Min 8 characters"><button class="pass-toggle" onclick="togglePass('nu-pass')">👁</button></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-user')">Cancel</button>
+      <button class="btn btn-admin" onclick="addUser()"><i class="fas fa-user-plus"></i> Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Supervisor Modal -->
+<div class="modal-overlay" id="modal-assign">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Assign Supervisor</span>
+      <button class="modal-close" onclick="closeModal('modal-assign')">✕</button>
+    </div>
+    <div id="assign-project-info" style="padding:16px 20px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:16px;"></div>
+    <div class="form-group"><label>Select Supervisor *</label>
+      <select id="assign-supervisor-select"><option value="">Choose supervisor…</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-assign')">Cancel</button>
+      <button class="btn btn-admin" onclick="confirmAssign()"><i class="fas fa-link"></i> Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Detail Modal -->
+<div class="modal-overlay" id="modal-project-detail">
+  <div class="modal modal-lg">
+    <div class="modal-hdr">
+      <span class="modal-title">Project Details</span>
+      <button class="modal-close" onclick="closeModal('modal-project-detail')">✕</button>
+    </div>
+    <div id="project-detail-body" style="padding:20px;max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-project-detail')">Close</button>
+      <button class="btn btn-admin" id="btn-reassign" onclick="openReassign()"><i class="fas fa-link"></i> (Re)Assign Supervisor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Edit User</span>
+      <button class="modal-close" onclick="closeModal('modal-edit-user')">✕</button>
+    </div>
+    <input type="hidden" id="eu-id">
+    <div class="form-group"><label>Full Name</label><input type="text" id="eu-name"></div>
+    <div class="form-group"><label>Department</label>
+      <select id="eu-dept">
+        <option value="">Select department</option>
+        <option>Computer Science</option>
+        <option>Engineering</option>
+        <option>Information Technology</option>
+        <option>Data Science</option>
+        <option>Cybersecurity</option>
+        <option>Mathematics</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Role</label>
+      <select id="eu-role">
+        <option value="student">Student</option>
+        <option value="supervisor">Supervisor</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Reset Password (leave blank to keep)</label>
+      <div class="pass-wrap"><input type="password" id="eu-pass" placeholder="New password"><button class="pass-toggle" onclick="togglePass('eu-pass')">👁</button></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-user')">Cancel</button>
+      <button class="btn btn-red btn-sm" onclick="deleteUser()" style="margin-right:auto;"><i class="fas fa-trash"></i> Delete</button>
+      <button class="btn btn-admin" onclick="saveUser()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Group Detail Modal -->
+<div class="modal-overlay" id="modal-group-detail">
+  <div class="modal modal-lg">
+    <div class="modal-hdr">
+      <span class="modal-title">Group Details</span>
+      <button class="modal-close" onclick="closeModal('modal-group-detail')">✕</button>
+    </div>
+    <div id="group-detail-body" style="padding:20px;max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-group-detail')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Group Supervisor Modal -->
+<div class="modal-overlay" id="modal-assign-group">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Assign Group Supervisor</span>
+      <button class="modal-close" onclick="closeModal('modal-assign-group')">✕</button>
+    </div>
+    <div class="form-group"><label>Select Supervisor</label>
+      <select id="assign-group-supervisor-select">
+        <option value="">Choose supervisor…</option>
+      </select>
+      <div id="assign-group-supervisor-info" style="margin-top:10px;padding:12px;background:var(--bg);border-radius:6px;color:var(--txt3);font-size:13px;">
+        Select a supervisor to view details here.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-assign-group')">Cancel</button>
+      <button class="btn btn-admin" onclick="confirmAssignGroup()"><i class="fas fa-user-tie"></i> Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Group Members Modal -->
+<div class="modal-overlay" id="modal-edit-group">
+  <div class="modal modal-lg">
+    <div class="modal-hdr">
+      <span class="modal-title">Edit Group Members</span>
+      <button class="modal-close" onclick="closeModal('modal-edit-group')">✕</button>
+    </div>
+    <div id="group-edit-body" style="padding:20px;max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-group')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/admin.js"></script>
+</body>
+</html>

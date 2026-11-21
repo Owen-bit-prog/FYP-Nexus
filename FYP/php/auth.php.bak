@@ -1,0 +1,225 @@
+<?php
+// ============================================================
+// auth.php — Login, Register, Logout, Session Check
+// ============================================================
+require_once __DIR__ . '/../config.php';
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit(0);
+
+startAppSession();
+
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+
+try {
+    switch ($action) {
+
+        // ── DEBUG/TEST ENDPOINT ────────────────────────────
+        case 'debug':
+            $db_status = 'OK';
+            $session_status = 'OK';
+            try {
+                DB::fetch('SELECT 1');
+            } catch (Exception $e) {
+                $db_status = 'FAILED: ' . $e->getMessage();
+            }
+            jsonResponse([
+                'success' => true,
+                'debug' => [
+                    'app_url'        => APP_URL,
+                    'db_host'        => DB_HOST,
+                    'db_name'        => DB_NAME,
+                    'db_status'      => $db_status,
+                    'session_status' => $session_status,
+                    'php_version'    => phpversion(),
+                    'server_time'    => date('Y-m-d H:i:s'),
+                    'user_logged_in' => currentUser() ? 'Yes' : 'No',
+                ]
+            ]);
+            break;
+
+        // ── LOGIN ──────────────────────────────────────────────
+        case 'login':
+            $email    = trim($_POST['email']    ?? '');
+            $password = trim($_POST['password'] ?? '');
+
+            if (!$email || !$password) {
+                jsonResponse(['success' => false, 'message' => 'Email and password are required.'], 400);
+            }
+
+            $user = DB::fetch('SELECT * FROM users WHERE email = ?', [$email]);
+
+            if (!$user || !password_verify($password, $user['password_hash'])) {
+                jsonResponse(['success' => false, 'message' => 'Invalid email or password.'], 401);
+            }
+
+            // Store session (exclude password hash)
+            unset($user['password_hash']);
+            $_SESSION['user'] = $user;
+
+            // Mark online
+            DB::query('UPDATE users SET is_online = 1, last_seen = NOW() WHERE id = ?', [$user['id']]);
+
+            jsonResponse(['success' => true, 'user' => $user]);
+            break;
+
+        // ── REGISTER ──────────────────────────────────────────
+        case 'register':
+            $name       = trim($_POST['full_name']   ?? '');
+            $email      = trim($_POST['email']       ?? '');
+            $password   = trim($_POST['password']    ?? '');
+            $role       = trim($_POST['role']        ?? 'student');
+            $studentId  = trim($_POST['student_id']  ?? '');
+            $department = trim($_POST['department']  ?? '');
+
+            if (!$name || !$email || !$password) {
+                jsonResponse(['success' => false, 'message' => 'Name, email, and password are required.'], 400);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                jsonResponse(['success' => false, 'message' => 'Invalid email format.'], 400);
+            }
+
+            if (strlen($password) < 8) {
+                jsonResponse(['success' => false, 'message' => 'Password must be at least 8 characters.'], 400);
+            }
+
+            if (!in_array($role, ['student', 'supervisor'], true)) {
+                $role = 'student';
+            }
+
+            $existing = DB::fetch('SELECT id FROM users WHERE email = ?', [$email]);
+            if ($existing) {
+                jsonResponse(['success' => false, 'message' => 'An account with this email already exists.'], 409);
+            }
+
+            $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+            $id = DB::insert(
+                'INSERT INTO users (full_name, email, password_hash, role, student_id, department) VALUES (?,?,?,?,?,?)',
+                [$name, $email, $hash, $role, $studentId ?: null, $department ?: null]
+            );
+
+            $user = DB::fetch('SELECT id, full_name, email, role, student_id, department, is_online FROM users WHERE id = ?', [(int)$id]);
+            $_SESSION['user'] = $user;
+            DB::query('UPDATE users SET is_online = 1 WHERE id = ?', [(int)$id]);
+
+            jsonResponse(['success' => true, 'user' => $user], 201);
+            break;
+
+        // ── LOGOUT ────────────────────────────────────────────
+        case 'logout':
+            $user = currentUser();
+            if ($user) {
+                DB::query('UPDATE users SET is_online = 0, last_seen = NOW() WHERE id = ?', [$user['id']]);
+            }
+            session_destroy();
+            jsonResponse(['success' => true]);
+            break;
+
+        // ── SESSION CHECK ─────────────────────────────────────
+        case 'check':
+            $user = currentUser();
+            if ($user) {
+                jsonResponse(['success' => true, 'user' => $user]);
+            } else {
+                jsonResponse(['success' => false, 'message' => 'Not authenticated'], 401);
+            }
+            break;
+
+        // ── UPDATE PROFILE ────────────────────────────────────
+        case 'update_profile':
+            $user = requireAuth();
+
+            $name  = sanitize($_POST['full_name']  ?? $user['full_name']);
+            $phone = sanitize($_POST['phone']      ?? '');
+            $bio   = sanitize($_POST['bio']        ?? '');
+            $dept  = sanitize($_POST['department'] ?? '');
+
+            DB::query(
+                'UPDATE users SET full_name=?, phone=?, bio=?, department=?, updated_at=NOW() WHERE id=?',
+                [$name, $phone, $bio, $dept, $user['id']]
+            );
+
+            // Handle avatar upload
+            if (!empty($_FILES['avatar']['tmp_name'])) {
+                $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg','jpeg','png','gif'], true)) {
+                    @mkdir(UPLOAD_DIR, 0755, true);
+                    $filename = 'avatar_' . $user['id'] . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($_FILES['avatar']['tmp_name'], UPLOAD_DIR . $filename)) {
+                        DB::query('UPDATE users SET avatar_path=? WHERE id=?', [$filename, $user['id']]);
+                    }
+                }
+            }
+
+            $updated = DB::fetch('SELECT id, full_name, email, role, student_id, department, phone, bio, avatar_path FROM users WHERE id=?', [$user['id']]);
+            $_SESSION['user'] = $updated;
+
+            jsonResponse(['success' => true, 'user' => $updated]);
+            break;
+
+        default:
+            jsonResponse(['success' => false, 'message' => 'Unknown action.'], 404);
+    }
+} catch (Exception $e) {
+    error_log('Auth Error: ' . $e->getMessage());
+    jsonResponse([
+        'success' => false,
+        'message' => 'A system error occurred',
+        'error' => $e->getMessage()
+    ], 500);
+}
+        }
+        session_destroy();
+        jsonResponse(['success' => true]);
+        break;
+
+    // ── SESSION CHECK ─────────────────────────────────────
+    case 'check':
+        $user = currentUser();
+        if ($user) {
+            jsonResponse(['success' => true, 'user' => $user]);
+        } else {
+            jsonResponse(['success' => false, 'message' => 'Not authenticated']);
+        }
+        break;
+
+    // ── UPDATE PROFILE ────────────────────────────────────
+    case 'update_profile':
+        $user = requireAuth();
+
+        $name  = sanitize($_POST['full_name']  ?? $user['full_name']);
+        $phone = sanitize($_POST['phone']      ?? '');
+        $bio   = sanitize($_POST['bio']        ?? '');
+        $dept  = sanitize($_POST['department'] ?? '');
+
+        DB::query(
+            'UPDATE users SET full_name=?, phone=?, bio=?, department=?, updated_at=NOW() WHERE id=?',
+            [$name, $phone, $bio, $dept, $user['id']]
+        );
+
+        // Handle avatar upload
+        if (!empty($_FILES['avatar']['tmp_name'])) {
+            $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg','jpeg','png','gif'], true)) {
+                $filename = 'avatar_' . $user['id'] . '_' . time() . '.' . $ext;
+                if (move_uploaded_file($_FILES['avatar']['tmp_name'], UPLOAD_DIR . $filename)) {
+                    DB::query('UPDATE users SET avatar_path=? WHERE id=?', [$filename, $user['id']]);
+                }
+            }
+        }
+
+        $updated = DB::fetch('SELECT id, full_name, email, role, student_id, department, phone, bio, avatar_path FROM users WHERE id=?', [$user['id']]);
+        $_SESSION['user'] = $updated;
+
+        jsonResponse(['success' => true, 'user' => $updated]);
+        break;
+
+    default:
+        jsonResponse(['success' => false, 'message' => 'Unknown action.'], 400);
+}
+

@@ -1,0 +1,639 @@
+/* ============================================================
+   mobile.css — FYP Nexus Full Mobile Responsive Styles
+   Covers: sidebar overlay, topbar, all pages, tables,
+           chat, modals, forms — for ≤860px and ≤520px
+   ============================================================ */
+
+/* ════════════════════════════════════════════════════
+   SIDEBAR OVERLAY (mobile drawer)
+   ════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+
+  /* App shell: single column, topbar + main */
+  #app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas: "topbar" "main";
+  }
+
+  /* Sidebar becomes a fixed overlay drawer */
+  #sidebar {
+    display: flex !important;
+    position: fixed;
+    top: 0; left: 0;
+    width: 270px;
+    height: 100vh;
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Backdrop when sidebar is open */
+  #sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 499;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  #sidebar-backdrop.open {
+    display: block;
+  }
+
+  /* Main content takes full width */
+  #main-content {
+    padding: 18px 16px;
+  }
+
+  /* Topbar hamburger always visible */
+  .topbar-btn:first-child {
+    display: flex !important;
+  }
+
+  /* Topbar: tighter on tablet */
+  #topbar {
+    padding: 0 16px;
+  }
+
+  /* User chip: hide text labels on tablet */
+  .user-chip-info {
+    display: none;
+  }
+
+  .user-chip {
+    padding: 6px;
+    border-radius: 50%;
+  }
+
+  /* Grids collapse to single column */
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stats grid: 2 columns on tablet */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Page header: stack on small screens */
+  .page-hdr {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-hdr > div:last-child,
+  .page-hdr > button:last-child {
+    align-self: flex-start;
+  }
+
+  /* Tables: horizontal scroll */
+  #users-table-wrap,
+  #projects-table-wrap,
+  #submissions-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 600px;
+  }
+
+  /* Chat layout: stacked */
+  .chat-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 120px);
+  }
+
+  .chat-sidebar {
+    display: flex;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 220px;
+  }
+
+  .chat-main {
+    min-height: 400px;
+  }
+
+  /* Messages layout (supervisor) */
+  .messages-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .msg-sidebar {
+    width: 100%;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Notification dropdown: fixed full-width panel */
+  .notif-dropdown {
+    position: fixed !important;
+    top: var(--topbar) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 0 var(--radius) var(--radius);
+    z-index: 450;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  .notif-list {
+    max-height: 60vh;
+  }
+
+  /* Modal: full width on tablet */
+  .modal {
+    max-width: 100%;
+    margin: 0 8px;
+  }
+
+  /* Video call: stack panes */
+  .vc-body {
+    grid-template-columns: 1fr;
+  }
+
+  /* Analytics grid */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Settings grid */
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Students grid */
+  .students-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Assignments grid */
+  .grid-2 .card {
+    min-height: unset;
+  }
+
+  /* Toast: bottom center on mobile */
+  #toast {
+    right: 50%;
+    transform: translateX(50%) translateY(20px);
+    bottom: 16px;
+    max-width: calc(100vw - 32px);
+  }
+
+  #toast.show {
+    transform: translateX(50%) translateY(0);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   PHONE (≤520px)
+   ════════════════════════════════════════════════════ */
+@media (max-width: 520px) {
+
+  #main-content {
+    padding: 12px;
+  }
+
+  /* Stats: single column on phone */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Stat card: horizontal layout on phone */
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .stat-card .stat-icon {
+    font-size: 22px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .stat-card .stat-label {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
+  .stat-card .progress-wrap {
+    display: none;
+  }
+
+  /* Page header */
+  .page-hdr {
+    margin-bottom: 14px;
+  }
+
+  .page-title-block h2 {
+    font-size: 20px;
+  }
+
+  .page-title-block p {
+    font-size: 12px;
+  }
+
+  /* Buttons in page header: wrap */
+  .page-hdr > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* Cards */
+  .card-hdr {
+    padding: 14px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+
+  /* Topbar */
+  #topbar {
+    padding: 0 12px;
+  }
+
+  .page-breadcrumb {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 8px;
+  }
+
+  /* Notification dropdown: already handled in tablet breakpoint */
+  .notif-list {
+    max-height: 55vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .notif-item {
+    padding: 14px 16px;
+  }
+
+  .notif-title {
+    font-size: 13px;
+  }
+
+  .notif-text {
+    font-size: 12px;
+  }
+
+  /* Modal: bottom sheet style on phone */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    margin: 0;
+    padding: 20px 16px 32px;
+  }
+
+  .modal-lg {
+    max-width: 100% !important;
+  }
+
+  /* Modal footer: stack buttons */
+  .modal-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .modal-footer .btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 100px;
+  }
+
+  /* Forms inside modals */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px; /* prevent iOS zoom */
+  }
+
+  /* Two-column form grids → single column */
+  div[style*="grid-template-columns:1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  /* Chat */
+  .chat-layout {
+    border-radius: var(--radius-sm);
+  }
+
+  .chat-sidebar {
+    max-height: 180px;
+  }
+
+  .chat-messages {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .msg {
+    max-width: 85%;
+  }
+
+  .chat-input-row {
+    padding: 10px 12px;
+  }
+
+  /* File drop zone */
+  .file-drop-zone {
+    padding: 24px 16px;
+  }
+
+  .file-drop-zone .drop-icon {
+    font-size: 32px;
+  }
+
+  /* File items */
+  .file-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .file-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Timeline */
+  .timeline {
+    padding-left: 22px;
+  }
+
+  .timeline-item {
+    padding: 12px;
+  }
+
+  /* Feedback stats */
+  .feedback-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Students grid: single column */
+  .students-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Profile layout */
+  .profile-layout {
+    flex-direction: column;
+  }
+
+  .profile-avatar-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  /* Alert banners */
+  .alert-banner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .alert-banner .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Requirements grid */
+  .requirements-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Video call on phone */
+  .vc-topbar {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .vc-timer {
+    font-size: 20px;
+  }
+
+  .vc-controls {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .vc-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+  }
+
+  .vc-btn-end {
+    width: 54px;
+    height: 54px;
+    font-size: 20px;
+  }
+
+  /* Proposals list */
+  .proposals-list .proposal-card {
+    padding: 14px;
+  }
+
+  /* Meetings grid */
+  .meetings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Data table: card-style on phone */
+  #users-table-wrap,
+  #projects-table-wrap,
+  #submissions-table-wrap {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    min-width: 540px;
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 10px 10px;
+  }
+
+  /* Unassigned/supervisor panels */
+  #unassigned-projects-list,
+  #supervisors-panel-list {
+    max-height: 300px;
+  }
+
+  /* Activity log */
+  #activity-log-list {
+    max-height: 400px;
+  }
+
+  /* Settings grid */
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Analytics grid */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Incoming call popup */
+  #incoming-call {
+    bottom: 16px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   AUTH PAGE MOBILE (index.html)
+   ════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+  .auth-wrap {
+    flex-direction: column;
+  }
+
+  .panel-left {
+    display: none;
+  }
+
+  .panel-right {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 440px;
+  }
+}
+
+@media (max-width: 520px) {
+  .panel-right {
+    padding: 24px 16px;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh;
+  }
+
+  /* Override auth.css full-screen card — make it a centered card instead */
+  .auth-card {
+    min-height: unset !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--border2) !important;
+    padding: 32px 22px !important;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.55) !important;
+    background: rgba(22,27,38,0.97) !important;
+    max-width: 420px !important;
+    width: 100% !important;
+  }
+
+  .auth-card::before,
+  .auth-card::after {
+    display: block !important;
+  }
+
+  .auth-card {
+    padding: 24px 16px;
+  }
+
+  .auth-tabs {
+    gap: 0;
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 11px 8px;
+    font-size: 13px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .role-picker {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .form-head h2 {
+    font-size: 22px;
+  }
+
+  .field-group input,
+  .field-group select {
+    font-size: 16px;
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   MOBILE NAV — bottom bar hint for sidebar toggle
+   ════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+  /* Ensure hamburger is always visible and tappable */
+  #topbar .topbar-btn:first-child {
+    display: flex;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
